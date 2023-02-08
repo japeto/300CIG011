@@ -1,22 +1,21 @@
 #ifndef __common_h__
 #define __common_h__
 
+#include <sys/time.h>
 #include <sys/stat.h>
 #include <assert.h>
-#include <time.h>
-#include <math.h>
 
-void Spin(int longvalue){
-	struct timespec spec;
-
-	clock_gettime(CLOCK_REALTIME, &spec);
-
-	double ts = spec.tv_sec;
-	while((spec.tv_sec - ts) < (double) longvalue){
-		ts = ts + 1; // ts++;
-		printf(">> %f", ts);
-	}
+double GetTime() {
+    struct timeval t;
+    int rc = gettimeofday(&t, NULL);
+    assert(rc == 0);
+    return (double) t.tv_sec + (double) t.tv_usec/1e6;
 }
 
-#endif // __common_h_
+void Spin(int howlong) {
+    double t = GetTime();
+    while ((GetTime() - t) < (double) howlong)
+	; // do nothing in loop
+}
 
+#endif // __common_h__
